@@ -14,7 +14,10 @@ function displayPDF(url) {
     var previousPageButton = document.getElementById('previousPageButton');
     var nextPageButton = document.getElementById('nextPageButton');
 
-    var loadingTask = pdfjsLib.getDocument({ url });
+    var loadingTask = pdfjsLib.getDocument({ 
+        url: url,
+        wasmUrl: './wasm/'
+    });
     loadingTask.promise.then(function(pdf) {
         console.log('PDF Loaded');
         var pageNumber = 1
