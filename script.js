@@ -14,18 +14,18 @@ function displayPDF(url) {
     var previousPageButton = document.getElementById('previousPageButton');
     var nextPageButton = document.getElementById('nextPageButton');
 
-    var loadingTask = pdfjsLib.getDocument({ 
+    var loadingTask = pdfjsLib.getDocument({
         url: url,
         wasmUrl: './wasm/'
     });
-    loadingTask.promise.then(function(pdf) {
+    loadingTask.promise.then(function (pdf) {
         console.log('PDF Loaded');
         var pageNumber = 1
         var minPages = 1;
         var maxPages = pdf.numPages;
 
         function renderPage(pageNumber) {
-            pdf.getPage(pageNumber).then(function(page) {
+            pdf.getPage(pageNumber).then(function (page) {
                 var scale = 1.5;
                 var viewport = page.getViewport({ scale: scale, });
 
@@ -37,11 +37,11 @@ function displayPDF(url) {
                 canvas.width = Math.floor(viewport.width * outputScale);
                 canvas.height = Math.floor(viewport.height * outputScale);
                 canvas.style.width = Math.floor(viewport.width) + "px";
-                canvas.style.height =  Math.floor(viewport.height) + "px";
+                canvas.style.height = Math.floor(viewport.height) + "px";
 
                 var transform = outputScale !== 1
-                ? [outputScale, 0, 0, outputScale, 0, 0]
-                : null;
+                    ? [outputScale, 0, 0, outputScale, 0, 0]
+                    : null;
 
                 var renderContext = {
                     canvasContext: context,
@@ -54,18 +54,41 @@ function displayPDF(url) {
 
         previousPageButton.addEventListener('click', () => {
             if (pageNumber != minPages) {
-                pageNumber --;
+                pageNumber--;
                 renderPage(pageNumber);
             }
         })
 
         nextPageButton.addEventListener('click', () => {
             if (pageNumber != maxPages) {
-                pageNumber ++;
+                pageNumber++;
                 renderPage(pageNumber);
             }
         })
-        
+
         renderPage(pageNumber);
     });
 }
+
+var portSelector = document.getElementById('portSelector');
+
+
+portSelector.addEventListener('click', async () => {
+    var port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 9600 });
+    console.log('Connected');
+    const reader = port.readable.getReader();
+    const decoder = new TextDecoder('utf-8');
+
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+            reader.releaseLock();
+            break;
+        }
+        if (value) {
+            var message = decoder.decode(value);
+            console.log(message);
+        }
+    }
+});
