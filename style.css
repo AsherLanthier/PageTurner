@@ -1,0 +1,16 @@
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+#controlls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 5vw;
+}
+
+button {
+    width: 10vw;
+    height: 5vh;
+}
