@@ -10,6 +10,9 @@ fileChooser.addEventListener('change', (event) => {
     displayPDF(url);
 })
 
+var portSelector = document.getElementById('portSelector');
+var pdfUploaded = false;
+
 function displayPDF(url) {
     var previousPageButton = document.getElementById('previousPageButton');
     var nextPageButton = document.getElementById('nextPageButton');
@@ -20,6 +23,8 @@ function displayPDF(url) {
     });
     loadingTask.promise.then(function (pdf) {
         console.log('PDF Loaded');
+        pdfUploaded = true;
+
         var pageNumber = 1
         var minPages = 1;
         var maxPages = pdf.numPages;
@@ -60,35 +65,46 @@ function displayPDF(url) {
         })
 
         nextPageButton.addEventListener('click', () => {
+            
             if (pageNumber != maxPages) {
                 pageNumber++;
                 renderPage(pageNumber);
             }
         })
 
+        portSelector.addEventListener('click', async () => {
+            var port = await navigator.serial.requestPort();
+            await port.open({ baudRate: 9600 });
+            console.log('Connected');
+            const reader = port.readable.getReader();
+            const decoder = new TextDecoder('utf-8');
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) {
+                    reader.releaseLock();
+                    break;
+                }
+                if (value) {
+                    var message = decoder.decode(value);
+                    console.log(message);
+
+                    if (message == 'N') {
+                        if (pageNumber != maxPages) {
+                            pageNumber++;
+                            renderPage(pageNumber);
+                        }
+                    }
+                }
+            }
+        });
+
         renderPage(pageNumber);
     });
 }
 
-var portSelector = document.getElementById('portSelector');
-
-
-portSelector.addEventListener('click', async () => {
-    var port = await navigator.serial.requestPort();
-    await port.open({ baudRate: 9600 });
-    console.log('Connected');
-    const reader = port.readable.getReader();
-    const decoder = new TextDecoder('utf-8');
-
-    while (true) {
-        const { value, done } = await reader.read();
-        if (done) {
-            reader.releaseLock();
-            break;
-        }
-        if (value) {
-            var message = decoder.decode(value);
-            console.log(message);
-        }
+portSelector.addEventListener("click", () => {
+    if (!pdfUploaded) {
+        alert("Please open a PDF before trying to connect to the pedal.");
     }
-});
+})

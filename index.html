@@ -3,12 +3,15 @@
     <head>
         <meta charset="UTF-8">
         <title>pdf Viewer</title>
+        <link rel="stylesheet" href="style.css">
     <body>
-        <input type="file" id="fileChooser" accept=".pdf">
-        <button id="previousPageButton">Previous</button>
-        <button id="nextPageButton">Next</button>
-        <button id="portSelector">Select USB Port</button>
-        
+        <div id="controlls">
+            <input type="file" id="fileChooser" accept=".pdf">
+            <button id="previousPageButton">Previous</button>
+            <button id="nextPageButton">Next</button>
+            <button id="portSelector">Select USB Port</button>
+        </div>
+
         <script type = 'module' src="script.js"></script>
         <canvas id="pdfCanvas"></canvas>
     </body>
