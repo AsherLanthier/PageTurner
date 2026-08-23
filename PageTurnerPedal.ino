@@ -22,7 +22,7 @@ if (timeNow-lastTimeButtonChanged >= buttonDebounce) {
     previousButtonState = buttonState;
     if(buttonState == HIGH) {
       timesPressed ++;
-      Serial.print("Next");
+      Serial.print("N");
     }
   }
 }
