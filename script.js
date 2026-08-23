@@ -89,7 +89,7 @@ function displayPDF(url) {
                     var message = decoder.decode(value);
                     console.log(message);
 
-                    if (message == 'N') {
+                    if (message[0] == 'N') {
                         if (pageNumber != maxPages) {
                             pageNumber++;
                             renderPage(pageNumber);
